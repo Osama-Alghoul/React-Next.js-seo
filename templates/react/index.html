@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- 1. Viewport: never maximum-scale=1 or user-scalable=no -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+
+    <!--
+      Tags marked data-seo-default are fallbacks for crawlers that don't run JS
+      (social platforms, AI crawlers). removeSeoDefaults() in main.tsx deletes them at
+      startup so each route's <Seo> tags don't end up duplicated.
+      NEVER put a canonical or og:url here: every SPA route is served this same file.
+    -->
+
+    <!-- 2. Title and description (defaults) -->
+    <title data-seo-default>Your App Name — The Ultimate Solution</title>
+    <meta name="description" content="What your app does and why users should care." data-seo-default />
+
+    <!-- 4. Robots default (permanent; private routes add a stricter noindex tag) -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- 5. Open Graph: absolute URLs only -->
+    <meta property="og:site_name" content="Your App Name" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" data-seo-default />
+    <meta property="og:title" content="Your App Name — The Ultimate Solution" data-seo-default />
+    <meta property="og:description" content="A compelling description for social feeds." data-seo-default />
+    <meta property="og:image" content="https://example.com/og-image.png" data-seo-default />
+    <meta property="og:image:width" content="1200" data-seo-default />
+    <meta property="og:image:height" content="630" data-seo-default />
+    <meta property="og:image:alt" content="App preview" data-seo-default />
+
+    <!-- 6. X / Twitter: falls back to og:* for title/description/image -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@your_company" />
+
+    <!-- 7. Icons, manifest, Apple web app (files live in /public) -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Your App Name" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- 8. Verification (only codes you actually have) + format detection -->
+    <meta name="google-site-verification" content="TODO-google-code" />
+    <meta name="msvalidate.01" content="TODO-bing-code" />
+    <meta name="format-detection" content="telephone=no, email=no, address=no" />
+
+    <!-- 9. Site-wide JSON-LD: static, so every crawler sees it without JS -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://example.com/#organization",
+            "name": "Your Company Name",
+            "url": "https://example.com",
+            "logo": "https://example.com/logo.png",
+            "sameAs": []
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://example.com/#website",
+            "name": "Your App Name",
+            "url": "https://example.com",
+            "publisher": { "@id": "https://example.com/#organization" }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
