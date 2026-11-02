@@ -1,4 +1,4 @@
-# react-nextjs-seo
+# React Next.js SEO
 
 An [Agent Skill](https://docs.claude.com/en/docs/claude-code/skills) that teaches Claude to **set up, fix, or audit complete SEO for React apps**:
 
