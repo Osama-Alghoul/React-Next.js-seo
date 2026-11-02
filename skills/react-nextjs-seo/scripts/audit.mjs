@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Static SEO audit for Next.js App Router projects. Read-only, zero dependencies.
+// Static SEO audit for React projects (Next.js App Router, Vite/CRA SPA, React Router v7). Read-only, zero dependencies.
 // Usage: node audit.mjs [project-root]
 // Exit code: 1 if any ERROR was found, else 0.
 
