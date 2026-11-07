@@ -6,7 +6,7 @@ An [Agent Skill](https://docs.claude.com/en/docs/claude-code/skills) that teache
 - **React SPAs** built with Vite or Create React App (React 19 native metadata or `react-helmet-async`)
 - **React Router v7 framework mode / Remix** (`meta` exports, resource routes, prerendering)
 
-It covers viewport and theme color, titles and descriptions, per-page canonical and hreflang, robots meta, Open Graph and X/Twitter cards, favicons/manifest/Apple web app tags, search-engine verification, JSON-LD structured data, sitemap and robots.txt. It also handles SPA-specific problems: crawlers that don't run JavaScript, prerendering, duplicate head tags, soft 404s and hash routing.
+It covers viewport and theme color, titles and descriptions, per-page canonical and hreflang, robots meta, Open Graph and X/Twitter cards, favicons/manifest/Apple web app tags, search-engine verification, JSON-LD structured data, sitemap and robots.txt, plus *optional* `llms.txt` / `llms-full.txt` for AI assistants. It also handles SPA-specific problems: crawlers that don't run JavaScript, prerendering, duplicate head tags, soft 404s and hash routing.
 
 ## Repository layout
 
@@ -64,6 +64,9 @@ You don't need to call the skill by name. Claude picks it up when your request i
 | "Add structured data so we get rich results" | Organization / WebSite / Article / Product / Breadcrumb JSON-LD |
 | "Get this site ready for launch and Search Console" | Full setup plus the launch checklist |
 | "My Vite app shows 'Vite + React' in Google" | Fixes `index.html` defaults and adds per-route head management |
+| "Add llms.txt" | *Optional extra:* generates `/llms.txt` and `/llms-full.txt` from your public pages |
+
+`llms.txt` is a community proposal, not a standard, and isn't a ranking factor. The skill offers it as an optional extra, never adds it by default, and the audit never reports it missing as an error or warning.
 
 ### What Claude will do
 
@@ -93,9 +96,9 @@ It auto-detects Next.js App Router, Vite / CRA SPAs and React Router framework m
 
 The files under `templates/` are working examples you can copy by hand:
 
-- **Next.js:** start with `templates/nextjs/lib/site.ts` (central config + `pageMetadata()` helper) and `app/layout.tsx`, then add `sitemap.ts`, `robots.ts`, `manifest.ts`, `opengraph-image.tsx` and `components/json-ld.tsx`.
-- **Vite / CRA:** replace your `index.html` head with `templates/react/index.html`, copy `src/seo/` and render one `<Seo>` per route (see `src/examples.tsx`). Add `scripts/generate-sitemap.mjs` as a `postbuild` step.
-- **React Router v7:** use `app/lib/seo.ts` (`seoMeta()` helper), `root.tsx`, and the `sitemap[.]xml.ts` / `robots[.]txt.ts` resource routes.
+- **Next.js:** start with `templates/nextjs/lib/site.ts` (central config + `pageMetadata()` helper) and `app/layout.tsx`, then add `sitemap.ts`, `robots.ts`, `manifest.ts`, `opengraph-image.tsx` and `components/json-ld.tsx`. Optional: `lib/llms.ts` with `app/llms.txt/route.ts` and `app/llms-full.txt/route.ts`.
+- **Vite / CRA:** replace your `index.html` head with `templates/react/index.html`, copy `src/seo/` and render one `<Seo>` per route (see `src/examples.tsx`). Add `scripts/generate-sitemap.mjs` as a `postbuild` step. Optional: `scripts/generate-llms.mjs`.
+- **React Router v7:** use `app/lib/seo.ts` (`seoMeta()` helper), `root.tsx`, and the `sitemap[.]xml.ts` / `robots[.]txt.ts` resource routes. Optional: `app/lib/llms.ts` with the `llms[.]txt.ts` / `llms-full[.]txt.ts` routes.
 
 Replace `example.com`, brand names and every `TODO` with your real values.
 

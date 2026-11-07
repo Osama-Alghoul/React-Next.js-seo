@@ -15,6 +15,7 @@ Detailed rules for each section of the SKILL.md workflow. Each section: **what i
 10. Sitemap and robots.txt
 11. How metadata merges (read this before editing nested layouts)
 12. Fields to skip
+13. Optional: llms.txt and llms-full.txt
 
 ---
 
@@ -326,3 +327,22 @@ export default function robots(): MetadataRoute.Robots {
 | `icons.other` mask-icon | Legacy Safari pinned tabs |
 | `appleWebApp.startupImage` | Optional legacy splash screens |
 | `metadata.viewport` / `metadata.themeColor` / `metadata.colorScheme` | Deprecated — use `viewport` export |
+
+## 13. Optional: llms.txt and llms-full.txt
+
+**Optional, not part of the SEO baseline.** Add it only if the user asks for it or agrees when you offer it.
+
+**What it is:** [`llms.txt`](https://llmstxt.org) is a Markdown file at the site root. It contains an H1 with the site name, a `>` blockquote summary, and H2 sections of links (`- [Title](url): note`). A section named `## Optional` marks links an LLM can skip when it's short on context. `llms-full.txt` is the same index followed by the full text of each page in one file.
+
+**Why it's optional:** it's a community proposal, not a standard. Google and Bing don't use it for ranking or indexing, and the major AI crawlers don't reliably request it yet. It's most useful on docs sites, developer tools and APIs, where coding agents and AI assistants are pointed at the docs directly. For most marketing sites it does little.
+
+**How (App Router):** templates in `templates/nextjs/`:
+- `lib/llms.ts`: the link sections plus `buildLlmsTxt()` / `buildLlmsFullTxt()`, using `siteConfig` and `absoluteUrl()` from `lib/site.ts`.
+- `app/llms.txt/route.ts` and `app/llms-full.txt/route.ts`: route handlers (a folder named `llms.txt` serves `/llms.txt`), `force-static` with hourly `revalidate`, `Content-Type: text/plain; charset=utf-8`.
+
+**Pitfalls:**
+- Public, indexable pages only, the same list as the sitemap. Never private, noindex or gated content, especially in `llms-full.txt`.
+- Use Markdown or plain text from the CMS/MDX source, not rendered HTML.
+- Absolute URLs that match the canonicals.
+- Don't also keep a static `public/llms.txt`. It conflicts with the route.
+- Don't present it as a ranking factor, and never report it missing as an error.

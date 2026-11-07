@@ -262,6 +262,13 @@ for (const n of ['sitemap.xml', 'robots.txt']) {
   }
 }
 
+// 11. llms.txt — OPTIONAL. Info only: never a warning or error.
+const llmsRoute = exists(path.join(appDir, 'llms.txt'))
+const llmsPublic = exists(path.join(publicDir, 'llms.txt'))
+if (llmsRoute || llmsPublic) add('ok', `llms.txt present (optional)${llmsRoute ? '' : ' — static public/llms.txt, keep it in sync'}.`)
+else add('info', 'Optional: no /llms.txt. Not a ranking factor; consider it only for docs/dev-tool sites (templates/nextjs/app/llms.txt).')
+if (llmsRoute && llmsPublic) add('warn', 'public/llms.txt conflicts with the app/llms.txt route — delete the static file.')
+
 if (Number.isFinite(nextMajor) && nextMajor >= 15) {
   const syncParams = pageFiles.filter((f) => {
     const src = codeOf(f)
@@ -419,6 +426,10 @@ function auditReact() {
     else add('ok', 'robots.txt present.')
   } else if (!/robots/i.test(scripts) && !sitemapGen) add('error', 'No robots.txt.')
 
+  // llms.txt — OPTIONAL. Info only: never a warning or error.
+  if (/llms/i.test(scripts) || exists(path.join(publicDir, 'llms.txt'))) add('ok', 'llms.txt present (optional).')
+  else add('info', 'Optional: no /llms.txt. Not a ranking factor; consider it only for docs/dev-tool sites (templates/react/scripts/generate-llms.mjs).')
+
   // Rendering strategy
   const prerender = ['vite-prerender-plugin', 'vite-plugin-prerender', 'vike', 'react-snap', '@prerenderer/rollup-plugin', 'vite-plugin-ssr', 'vite-react-ssg', 'react-static'].find((d) => deps[d])
   if (prerender === 'react-snap') add('warn', 'react-snap is unmaintained — consider React Router framework-mode prerender or Vike.')
@@ -457,6 +468,9 @@ function auditReactRouterFramework({ allCode, anyCode, publicDir }) {
   const robotsRoute = allCode.some(([f]) => /robots(\[\.\]|\.)txt/.test(f)) || exists(path.join(publicDir, 'robots.txt'))
   sitemapRoute ? add('ok', 'Sitemap present.') : add('error', 'No sitemap (add app/routes/sitemap[.]xml.ts).')
   robotsRoute ? add('ok', 'robots.txt present.') : add('error', 'No robots.txt (add app/routes/robots[.]txt.ts).')
+  // llms.txt — OPTIONAL. Info only: never a warning or error.
+  const llmsRoute = allCode.some(([f]) => /llms(\[\.\]|\.)txt/.test(f)) || exists(path.join(publicDir, 'llms.txt'))
+  llmsRoute ? add('ok', 'llms.txt present (optional).') : add('info', 'Optional: no /llms.txt. Not a ranking factor; consider it only for docs/dev-tool sites (app/routes/llms[.]txt.ts).')
 
   const cfg = ['react-router.config.ts', 'react-router.config.js'].map((n) => path.join(root, n)).find(exists)
   const cfgSrc = cfg ? stripComments(read(cfg)) : ''

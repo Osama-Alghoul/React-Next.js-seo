@@ -18,6 +18,7 @@ Covers React apps built with **Vite** or **Create React App**, using either clie
 10. Sitemap and robots.txt
 11. React Router v7 framework mode
 12. Verifying what crawlers actually see
+13. Optional: llms.txt and llms-full.txt
 
 ---
 
@@ -211,3 +212,11 @@ You get real HTML per route (SSR or prerendered), so most SPA problems go away. 
 - For prerendered/SSR routes, every public route's raw HTML should contain its own `<title>`, description, canonical and OG tags. For a pure SPA, confirm the `index.html` defaults are correct and there's no hard-coded canonical.
 - With JS running, confirm there's exactly one `<title>`, one description and one canonical per route (the duplicate-tag trap).
 - After deploying, use Search Console's **URL Inspection → View crawled page** to see Google's rendered HTML. Also run the Rich Results Test, the LinkedIn Post Inspector and the Facebook Sharing Debugger.
+
+## 13. Optional: llms.txt and llms-full.txt
+
+**Optional, not part of the SEO baseline.** Add it only if the user wants it. See `nextjs-reference.md` section 13 for the format and why it's optional.
+
+- **Vite / CRA:** `templates/react/scripts/generate-llms.mjs` writes `llms.txt` and `llms-full.txt` into the build folder. Chain it after the sitemap: `"postbuild": "node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs"`. These are static files, so a pure SPA works fine and no prerendering is needed. Keep `NAME` / `DESCRIPTION` in sync with `src/seo/site.ts`.
+- **React Router framework mode:** `app/lib/llms.ts` plus resource routes `app/routes/llms[.]txt.ts` and `app/routes/llms-full[.]txt.ts`. Add `/llms.txt` and `/llms-full.txt` to `prerender` for static sites, and register the routes in `app/routes.ts` if you don't use file-name routing.
+- Same content rules as the sitemap: public pages only, Markdown/plain text, absolute canonical URLs. Use one source: either the generator or a hand-written `public/llms.txt`, not both.

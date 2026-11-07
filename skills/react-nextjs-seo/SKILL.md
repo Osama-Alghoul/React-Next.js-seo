@@ -1,6 +1,6 @@
 ---
 name: react-nextjs-seo
-description: Set up, fix, or audit complete SEO for React apps — Next.js App Router, plain React SPAs (Vite, Create React App) and React Router v7 framework mode / Remix. Covers viewport and theme color, titles and descriptions, per-page canonical and hreflang, robots meta, Open Graph and X/Twitter cards, favicons/manifest/Apple web app, search-engine verification, format detection, app links, JSON-LD structured data (Schema.org), sitemap and robots.txt, plus SPA-specific problems (crawlers that don't run JS, prerendering, duplicate head tags, soft 404s, hash routing). Use whenever the user wants to "add SEO", make a React or Next.js site rank, fix link previews or social cards, add a sitemap/robots.txt, add structured data or rich results, use react-helmet or React 19 metadata, prepare a site for launch or Google Search Console, or audit existing metadata — even if they don't say "SEO" explicitly.
+description: Set up, fix, or audit complete SEO for React apps — Next.js App Router, plain React SPAs (Vite, Create React App) and React Router v7 framework mode / Remix. Covers viewport and theme color, titles and descriptions, per-page canonical and hreflang, robots meta, Open Graph and X/Twitter cards, favicons/manifest/Apple web app, search-engine verification, format detection, app links, JSON-LD structured data (Schema.org), sitemap and robots.txt, optional llms.txt / llms-full.txt for AI assistants, plus SPA-specific problems (crawlers that don't run JS, prerendering, duplicate head tags, soft 404s, hash routing). Use whenever the user wants to "add SEO", make a React or Next.js site rank, fix link previews or social cards, add a sitemap/robots.txt, add structured data or rich results, use react-helmet or React 19 metadata, prepare a site for launch or Google Search Console, or audit existing metadata — even if they don't say "SEO" explicitly.
 ---
 
 # React & Next.js SEO
@@ -47,6 +47,7 @@ Pull from the codebase, README, `package.json`, existing copy and env vars first
 | What the product is (SaaS, product, articles…), pricing, real ratings | JSON-LD type choice |
 | Native iOS/Android app details (only if one ships) | app links |
 | **SPA only:** which routes must have their own social previews, and the host | rendering strategy, soft-404 setup |
+| Whether they want `llms.txt` (optional, see below) | `llms.txt` / `llms-full.txt` |
 
 Read the site URL from an env var (`NEXT_PUBLIC_SITE_URL`, `VITE_SITE_URL`, `REACT_APP_SITE_URL`, `SITE_URL`) with a hard-coded production fallback, so the canonical domain is defined in one place.
 
@@ -64,6 +65,7 @@ Rules, reasons and edge cases: `references/nextjs-reference.md`. Templates: `tem
 8. **Verification / format detection / app links**: `verification.google`, `other['msvalidate.01']`, never `yahoo`. `formatDetection` off for email/address/telephone. `appLinks` only if a native app ships.
 9. **JSON-LD**: the `JsonLd` helper (escapes `<`). Home page gets `Organization` + `WebSite` (+ `SoftwareApplication`/`Product`) linked by `@id`. Posts get `Article`/`BlogPosting` + `BreadcrumbList`. Only real, visible ratings.
 10. **Sitemap + robots**: `app/sitemap.ts` (public routes + dynamic entries, real `lastModified`) and `app/robots.ts` (disallow `/api/` and private areas, link the sitemap, block non-production).
+11. *(Optional)* **llms.txt**: only if the user wants it. See "Optional — llms.txt" below. Templates: `lib/llms.ts`, `app/llms.txt/route.ts`, `app/llms-full.txt/route.ts`.
 
 Keep shared values in `lib/site.ts` and use the `pageMetadata()` helper so canonical, OG url and shared OG fields are always set together.
 
@@ -96,6 +98,7 @@ Don't silently pick one. If the project stays a pure SPA, state clearly what soc
 7. **Icons and manifest** in `public/`. CRA already has `manifest.json`, so update it rather than adding a second one. Don't link files that don't exist; list what the user must add.
 8. **Sitemap + robots.txt**: `templates/react/scripts/generate-sitemap.mjs` as a `postbuild` script (writes both into `dist/` or `build/`, disallow-all outside production). Use one source of truth: if a hand-written `public/robots.txt` exists, keep either it or the script, not both.
 9. **Prerendering** if chosen in step 0. Then verify that each public route's built HTML contains its own tags.
+10. *(Optional)* **llms.txt**: `templates/react/scripts/generate-llms.mjs` as an extra `postbuild` step, only if the user wants it.
 
 ### B2 — React Router v7 framework mode
 
@@ -107,6 +110,16 @@ Templates: `templates/react/react-router-framework/`.
 4. Private routes return `seoMeta({ ..., noindex: true })`.
 5. Resource routes `app/routes/sitemap[.]xml.ts` and `app/routes/robots[.]txt.ts`.
 6. `react-router.config.ts`: keep SSR, or `prerender` public routes (including dynamic ones and the sitemap/robots routes).
+7. *(Optional)* **llms.txt**: `app/lib/llms.ts` plus resource routes `llms[.]txt.ts` and `llms-full[.]txt.ts`, only if the user wants it. Add them to `prerender` if the site is static.
+
+## Optional — llms.txt and llms-full.txt
+
+[`llms.txt`](https://llmstxt.org) is a Markdown file at `/llms.txt` that gives LLMs a short summary of the site and links to its key pages. `llms-full.txt` holds the full text of those pages in one file. **They are optional, not part of the SEO baseline.** It's a community proposal, not a standard. Google and Bing don't use it for ranking, and the major AI crawlers don't reliably fetch it yet. It helps most on docs sites, developer tools and APIs, where coding agents and AI assistants read the docs directly.
+
+- **Don't add it by default.** Mention it once as an optional extra and add it only if the user says yes. Never report a missing `llms.txt` as an error or warning, and never let it block the launch checklist.
+- Same content rule as the sitemap: public, indexable pages only. `llms-full.txt` must contain Markdown or plain text, not rendered HTML, and never private content.
+- Generate it from the same data source and `site` config as the sitemap, so it stays in sync.
+- It doesn't replace prerendering, JSON-LD or good page content. AI search engines still mainly read the real pages.
 
 ## Phase 4 — Verify
 
@@ -130,6 +143,7 @@ Templates: `templates/react/react-router-framework/`.
 - [ ] Sitemap and robots.txt live
 - [ ] React SPA: rendering strategy decided; public routes prerendered if they need their own previews; no hash routing
 - [ ] Site verified and sitemap submitted in Google Search Console (and Bing Webmaster Tools)
+- [ ] *(Optional, not required for launch)* `/llms.txt` and `/llms-full.txt` live, if the user chose them
 
 After deploying, test with:
 - **Google Rich Results Test**: does the JSON-LD qualify for rich results?

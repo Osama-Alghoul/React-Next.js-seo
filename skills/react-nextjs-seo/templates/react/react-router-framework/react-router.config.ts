@@ -15,6 +15,9 @@ export default {
       ...posts.map((p) => `/blog/${p.slug}`),
       '/sitemap.xml',
       '/robots.txt',
+      // Optional, only if you added the llms resource routes:
+      // '/llms.txt',
+      // '/llms-full.txt',
     ]
   },
 } satisfies Config
